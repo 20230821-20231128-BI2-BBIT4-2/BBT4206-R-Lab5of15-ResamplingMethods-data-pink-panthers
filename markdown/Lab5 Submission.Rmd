@@ -1,3 +1,83 @@
+---
+title: "Business Intelligence Project"
+output:
+  github_document: 
+    toc: yes
+    toc_depth: 4
+    fig_width: 6
+    fig_height: 4
+    df_print: default
+editor_options:
+  chunk_output_type: console
+---
+
+# Business Intelligence Lab Submission Markdown
+
+<Data Pink Panthers> \<17/10/23\>
+
+# Student Details {#student-details}
+
++---------------------------------------------------+---------------------------------------------+--------------------+
+| **Student ID Numbers and Names of Group Members** | \| 1. 137315 - C - Yashvi Bhadania          |                    |
+|                                                   |                                             |                    |
+|                                                   | \| 2. 134668 - C - June Ndinda Mutiso       |                    |
+|                                                   |                                             |                    |
+|                                                   | \| 3. 135227 - C - Innocent Mbuvi           |                    |
+|                                                   |                                             |                    |
+|                                                   | \| 4. 134253 - C - Uzair Farooq             |                    |
+|                                                   |                                             |                    |
+|                                                   | \| 5. 135109 - C - Jackson Kaburu           |                    |
++---------------------------------------------------+---------------------------------------------+--------------------+
+|                                                   | **GitHub Classroom Group Name**             | Data Pink Panthers |
++---------------------------------------------------+---------------------------------------------+--------------------+
+| **Course Code**                                   | BBT4206                                     |                    |
++---------------------------------------------------+---------------------------------------------+--------------------+
+| **Course Name**                                   | Business Intelligence II                    |                    |
++---------------------------------------------------+---------------------------------------------+--------------------+
+| **Program**                                       | Bachelor of Business Information Technology |                    |
++---------------------------------------------------+---------------------------------------------+--------------------+
+| **Semester Duration**                             | 21^st^ August 2023 to 28^th^ November 2023  |                    |
++---------------------------------------------------+---------------------------------------------+--------------------+
+
+# Setup Chunk {#setup-chunk}
+
+**Note:** the following "*KnitR*" options have been set as the defaults in this markdown:\
+`knitr::opts_chunk$set(echo = TRUE, warning = FALSE, eval = TRUE, collapse = FALSE, tidy.opts = list(width.cutoff = 80), tidy = TRUE)`.
+
+More KnitR options are documented here <https://bookdown.org/yihui/rmarkdown-cookbook/chunk-options.html> and here <https://yihui.org/knitr/options/>.
+
+``` r
+knitr::opts_chunk$set(
+    eval = TRUE,
+    echo = TRUE,
+    warning = FALSE,
+    collapse = FALSE,
+    tidy = TRUE
+)
+```
+
+------------------------------------------------------------------------
+
+**Note:** the following "*R Markdown*" options have been set as the defaults in this markdown:
+
+> output:
+>
+> github_document:\
+> toc: yes\
+> toc_depth: 4\
+> fig_width: 6\
+> fig_height: 4\
+> df_print: default
+>
+> editor_options:\
+> chunk_output_type: console
+
+# Step 1: Install and Load Packages
+
+We start by installing all the required packages
+
+``` r
+# STEP 1. Install and Load the Required Packages ----
 
 #---- Installing and Loading the Required Packages ----
 ## caret ----
@@ -55,64 +135,84 @@ if (require("naivebayes")) {
   }
   require("mlbench")
   
-  
-#STEP 1: Loading the dataset
+```
+
+# Step 2: Load Dataset {#sec-step-3-load-dataset-and-description}
+
+``` r
   PimaIndiansDiabetes <-
     readr::read_csv(
       "data/pima-indians-diabetes.csv")
+```
 
-  #NAIVE BAYES
-#STEP 2: Splitting the dataset ----
-  train_index <- createDataPartition(PimaIndiansDiabetes$`No. of pregnancies`, # nolint
+# Step 3: Using Naives Bayes
+
+### Splitting the dataset
+
+``` r
+  train_index <- createDataPartition(PimaIndiansDiabetes$Insulin, # nolint
                                      p = 0.80, list = FALSE)
   PimaIndiansDiabetes_train <- PimaIndiansDiabetes[train_index, ]
   PimaIndiansDiabetes_test <- PimaIndiansDiabetes[-train_index, ]
   
   
-  
-#STEP 3a: using "NaiveBayes()" function in the "e1071" package ----
+#using "NaiveBayes()" function in the "e1071" package ----
   PimaIndiansDiabetes_model_nb_e1071 <- # nolint
-    e1071::naiveBayes(`No. of pregnancies` ~ .,
+    e1071::NaiveBayes(diabetes ~ .,
                      data = PimaIndiansDiabetes_train)
   
-  
-#STEP 3b: using "NaiveBayes()" function in the "klaR" package 
+#using "NaiveBayes()" function in the "klaR" package 
   PimaIndiansDiabetes_model_nb_klaR <-
-    klaR::NaiveBayes(`No. of pregnancies` ~ .,
+    klaR::NaiveBayes(diabetes ~ .,
                      data = PimaIndiansDiabetes_train)
-  
-#STEP 4:Testing the trained Naive Bayes model
-  predictions_nb_e1071 <-
+```
+
+### Testing the trained Naive Bayes model
+
+``` r
+predictions_nb_e1071 <-
     predict(PimaIndiansDiabetes_model_nb_e1071,
             PimaIndiansDiabetes_test[, 1:9])
+```
 
-#STEP 5:Printing results
+### Printing Results
+
+``` r
   print(PimaIndiansDiabetes_model_nb_e1071)
   caret::confusionMatrix(predictions_nb_e1071,
                          PimaIndiansDiabetes_test$`No. of pregnancies`)
+```
 
-#STEP 6:the confusion matrix
+### Confusion Matrix
+
+``` r
   plot(table(predictions_nb_e1071,
              PimaIndiansDiabetes_test$`No. of pregnancies`))
-  
-  predictions_nb_e1071 <-
-    predict(defaulter_dataset_model_nb_e1071,
-            defaulter_dataset_test[, 1:25])
-  
-  
-  #----BOOTSTRAPPING----
-  
-#STEP 1: Loading the dataset
+```
+
+# Step 4: Using Bootstrapping
+
+### Load the dataset
+
+``` r
   PimsIndiansDiabetes <-
     readr::read_csv(
       "data/pima-indians-diabetes.csv")
-  
+```
+
+### Split and train the dataset
+
+``` r
 #STEP 2: Splitting the dataset into training and testing datasets
   train_index <- createDataPartition(PimaIndiansDiabetes$`No. of pregnancies`, p = 0.65, list = FALSE)
   PimaIndiansDiabetes_train <- PimaIndiansDiabetes[train_index, ]
   PimaIndiansDiabetes_test <- PimaIndiansDiabetes[-train_index, ]
   
-  
+```
+
+### Training a logistic regression model
+
+``` r
 #STEP 3:Training a logistic regression model
  train_control <- trainControl(method = "boot", number = 500)
   
@@ -128,12 +228,19 @@ if (require("naivebayes")) {
    metric = "RMSE"
  )
  
- 
+```
+
+### Test the Model
+
+``` r
 #STEP 4: Testing the model
  predictions_lm <- predict(PimaIndiansDiabetes_model_lm,
                            PimaIndiansDiabetes_test[, 1:9])
- 
+```
 
+### View accuracy and the predicted valies
+
+``` r
  #STEP 5: Viewing the accuracy and the predicted values
  print(PimaIndiansDiabetes_model_lm)
  print(predictions_lm)
@@ -147,8 +254,11 @@ if (require("naivebayes")) {
                mass = c(50),
                pedigree = c(1.9),
                age = c(48), check.names = FALSE)
- 
+```
 
+### Predict output on unseen data and print output
+
+``` r
 #STEP 6: Using the model to predict the output based on unseen data
  predictions_lm_new_data <- 
    predict(PimaIndiansDiabetes_model_lm, new_data)
@@ -156,17 +266,32 @@ if (require("naivebayes")) {
    
 #STEP 7: The output below
    print(predictions_lm_new_data)
-   
-   #---cross validation----
-#STEP 1: Loading the dataset   
-   data("PimaIndiansDiabetes")
-   
+```
+
+# Step 5: Using Cross Validation
+
+### Load the dataset
+
+``` r
+  PimsIndiansDiabetes <-
+    readr::read_csv(
+      "data/pima-indians-diabetes.csv")
+```
+
+### Split and train the dataset
+
+``` r
 #STEP 2: Splitting the dataset into training and testing datasets
-   train_index <- createDataPartition(PimaIndiansDiabetes$`No. of pregnancies`,
-                                      p = 0.60, list = FALSE)
-   PimaIndiansDiabetes_train <- PimaIndiansDiabetes[train_index, ]
-   PimaIndiansDiabetes_test <- PimaIndiansDiabetes[-train_index, ]
-   
+  train_index <- createDataPartition(PimaIndiansDiabetes$`No. of pregnancies`, p = 0.65, list = FALSE)
+  PimaIndiansDiabetes_train <- PimaIndiansDiabetes[train_index, ]
+  PimaIndiansDiabetes_test <- PimaIndiansDiabetes[-train_index, ]
+  
+```
+
+### Training using 10-fold cross validation and testing the trained linear model
+
+``` r
+ 
    #--REGRESSION--
    #STEP 3a: using 10-fold cross validation
    train_control <- trainControl(method = "cv", number = 10)
@@ -181,13 +306,21 @@ if (require("naivebayes")) {
    #STEP 3b: Testing the trained linear model
    predictions_lm <- predict(PimaIndiansDiabetes_model_lm, PimaIndiansDiabetes_test[, -9])
    
+```
+
+### View accuracy and the predicted valies
+
+``` r
    #STEP 4: View the Accuracy and the predicted values
    print(PimaIndiansDiabetes_model_lm)
    print(predictions_lm)
    
-   
-   
-   #--CLASSIFICATION----
+```
+
+### LDA Classifier based on 5-fold cross validation
+
+``` r
+#--CLASSIFICATION----
    #STEP 5: LDA classifier based on a 5-fold cross validation
    train_control <- trainControl(method = "cv", number = 5)
    
@@ -195,10 +328,19 @@ if (require("naivebayes")) {
      caret::train(`diabetes` ~ ., data = PimaIndiansDiabetes_train,
                   trControl = train_control, na.action = na.omit, method = "lda2",
                   metric = "Accuracy")
+```
+
+### Testing the trained LDA Model
+
+``` r
    #STEP 6: Testing the trained LDA model
    predictions_lda <- predict(PimaIndiansDiabetes_model_lda,
                               PimaIndiansDiabetes_test[, 1:9])
-   
+```
+
+### View the summary of the model
+
+``` r
    #STEP 7: Viewing the summary of the model and view the confusion matrix
    
    print(PimaIndiansDiabetes_model_lda)
@@ -212,11 +354,20 @@ if (require("naivebayes")) {
    predictions_nb_e1071 <-
      predict(PimaIndiansDiabetes_model_nb, PimaIndiansDiabetes_test[, 1:9])
    
-   #STEP 7: View a summary of the naive Bayes model and the confusion matrix 
-   print(PimaIndiansDiabetes_model_nb)
+```
+
+### View the Confusion Matrix
+
+``` r
+  print(PimaIndiansDiabetes_model_nb)
    caret::confusionMatrix(predictions_nb_e1071, PimaIndiansDiabetes_test$diabetes)
    
-   #STEP 8: Classification: SVM with Repeated k-fold Cross Validation----
+```
+
+### Classification: SVM with Repeated k-fold Cross Validation
+
+``` r
+#STEP 8: Classification: SVM with Repeated k-fold Cross Validation----
    train_control <- trainControl(method = "repeatedcv", number = 5, repeats = 3)
    
    PimaIndiansDiabetes_model_svm <-
@@ -231,7 +382,12 @@ if (require("naivebayes")) {
    print(PimaIndiansDiabetes_model_svm)
    caret::confusionMatrix(predictions_svm, PimaIndiansDiabetes_test$diabetes)
    
-   ##STEP 9: Classification: Naive Bayes with Leave One Out Cross Validation ----
+```
+
+### Classification: Naive Bayes with Leave One Out Cross Validation
+
+``` r
+ ##STEP 9: Classification: Naive Bayes with Leave One Out Cross Validation ----
    train_control <- trainControl(method = "LOOCV")
    
    PimaIndiansDiabetes_model_nb_loocv <-
@@ -247,3 +403,5 @@ if (require("naivebayes")) {
    print(PimaIndiansDiabetes_model_nb_loocv)
    caret::confusionMatrix(predictions_nb_loocv, PimaIndiansDiabetes_test$diabetes)
    
+   
+```
