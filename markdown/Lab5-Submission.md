@@ -20,7 +20,7 @@ Business Intelligence Project
     model](#training-a-logistic-regression-model)
   - [Test the Model](#test-the-model)
   - [View accuracy and the predicted
-    valies](#view-accuracy-and-the-predicted-valies)
+    values](#view-accuracy-and-the-predicted-values)
   - [Predict output on unseen data and print
     output](#predict-output-on-unseen-data-and-print-output)
 - [Step 5: Using Cross Validation](#step-5-using-cross-validation)
@@ -30,7 +30,7 @@ Business Intelligence Project
     linear
     model](#training-using-10-fold-cross-validation-and-testing-the-trained-linear-model)
   - [View accuracy and the predicted
-    valies](#view-accuracy-and-the-predicted-valies-1)
+    valies](#view-accuracy-and-the-predicted-valies)
   - [LDA Classifier based on 5-fold cross
     validation](#lda-classifier-based-on-5-fold-cross-validation)
   - [Testing the trained LDA Model](#testing-the-trained-lda-model)
@@ -196,9 +196,7 @@ if (require("naivebayes")) {
 # Step 2: Load Dataset
 
 ``` r
-  PimaIndiansDiabetes <-
-    readr::read_csv(
-      "data/pima-indians-diabetes.csv")
+ data(PimaIndiansDiabetes)
 ```
 
 # Step 3: Using Naives Bayes
@@ -206,18 +204,21 @@ if (require("naivebayes")) {
 ### Splitting the dataset
 
 ``` r
-  train_index <- createDataPartition(PimaIndiansDiabetes$Insulin, # nolint
+ #STEP 2: Splitting the dataset ----
+  train_index <- createDataPartition(PimaIndiansDiabetes$diabetes, # nolint
                                      p = 0.80, list = FALSE)
   PimaIndiansDiabetes_train <- PimaIndiansDiabetes[train_index, ]
   PimaIndiansDiabetes_test <- PimaIndiansDiabetes[-train_index, ]
   
   
-#using "NaiveBayes()" function in the "e1071" package ----
+  
+#STEP 3a: using "NaiveBayes()" function in the "e1071" package ----
   PimaIndiansDiabetes_model_nb_e1071 <- # nolint
-    e1071::NaiveBayes(diabetes ~ .,
+    e1071::naiveBayes(diabetes ~ .,
                      data = PimaIndiansDiabetes_train)
   
-#using "NaiveBayes()" function in the "klaR" package 
+  
+#STEP 3b: using "NaiveBayes()" function in the "klaR" package 
   PimaIndiansDiabetes_model_nb_klaR <-
     klaR::NaiveBayes(diabetes ~ .,
                      data = PimaIndiansDiabetes_train)
@@ -226,7 +227,7 @@ if (require("naivebayes")) {
 ### Testing the trained Naive Bayes model
 
 ``` r
-predictions_nb_e1071 <-
+  predictions_nb_e1071 <-
     predict(PimaIndiansDiabetes_model_nb_e1071,
             PimaIndiansDiabetes_test[, 1:9])
 ```
@@ -234,16 +235,22 @@ predictions_nb_e1071 <-
 ### Printing Results
 
 ``` r
+#STEP 5:Printing results
   print(PimaIndiansDiabetes_model_nb_e1071)
   caret::confusionMatrix(predictions_nb_e1071,
-                         PimaIndiansDiabetes_test$`No. of pregnancies`)
+                         PimaIndiansDiabetes_test$diabetes)
 ```
 
 ### Confusion Matrix
 
 ``` r
+#STEP 6:the confusion matrix
   plot(table(predictions_nb_e1071,
-             PimaIndiansDiabetes_test$`No. of pregnancies`))
+             PimaIndiansDiabetes_test$diabetes))
+  
+  predictions_nb_e1071 <-
+    predict(defaulter_dataset_model_nb_e1071,
+            defaulter_dataset_test[, 1:25])
 ```
 
 # Step 4: Using Bootstrapping
@@ -251,16 +258,14 @@ predictions_nb_e1071 <-
 ### Load the dataset
 
 ``` r
-  PimsIndiansDiabetes <-
-    readr::read_csv(
-      "data/pima-indians-diabetes.csv")
+ data(PimaIndiansDiabetes)
 ```
 
 ### Split and train the dataset
 
 ``` r
 #STEP 2: Splitting the dataset into training and testing datasets
-  train_index <- createDataPartition(PimaIndiansDiabetes$`No. of pregnancies`, p = 0.65, list = FALSE)
+  train_index <- createDataPartition(PimaIndiansDiabetes$diabetes, p = 0.65, list = FALSE)
   PimaIndiansDiabetes_train <- PimaIndiansDiabetes[train_index, ]
   PimaIndiansDiabetes_test <- PimaIndiansDiabetes[-train_index, ]
   
@@ -273,7 +278,7 @@ predictions_nb_e1071 <-
  train_control <- trainControl(method = "boot", number = 500)
   
  PimaIndiansDiabetes_model_lm <- 
-   caret::train(`No. of pregnancies` ~ 
+   caret::train(diabetes ~ 
                  Glucose + `Blood Pressure` + `Skin Thickness`
                 + Insulin + `Diabetes predigree function`+
                   + Age + Class,
@@ -283,6 +288,7 @@ predictions_nb_e1071 <-
    method = "lm",
    metric = "RMSE"
  )
+ 
  
 ```
 
@@ -294,7 +300,7 @@ predictions_nb_e1071 <-
                            PimaIndiansDiabetes_test[, 1:9])
 ```
 
-### View accuracy and the predicted valies
+### View accuracy and the predicted values
 
 ``` r
  #STEP 5: Viewing the accuracy and the predicted values
@@ -302,7 +308,7 @@ predictions_nb_e1071 <-
  print(predictions_lm)
  
  new_data <-
-   data.frame( `No. of pregnancies` = c(4), 
+   data.frame( diabetes = c(4), 
                Glucose = c(160),
                `Blood Pressure` = c(149),
                triceps = c(50),
@@ -310,6 +316,7 @@ predictions_nb_e1071 <-
                mass = c(50),
                pedigree = c(1.9),
                age = c(48), check.names = FALSE)
+ 
 ```
 
 ### Predict output on unseen data and print output
@@ -321,7 +328,7 @@ predictions_nb_e1071 <-
    predict(PimaIndiansDiabetes_model_lm, new_data)
    
 #STEP 7: The output below
-   print(predictions_lm_new_data)
+print(predictions_lm_new_data)
 ```
 
 # Step 5: Using Cross Validation
@@ -329,26 +336,24 @@ predictions_nb_e1071 <-
 ### Load the dataset
 
 ``` r
-  PimsIndiansDiabetes <-
-    readr::read_csv(
-      "data/pima-indians-diabetes.csv")
+ data(PimaIndiansDiabetes)
 ```
 
 ### Split and train the dataset
 
 ``` r
 #STEP 2: Splitting the dataset into training and testing datasets
-  train_index <- createDataPartition(PimaIndiansDiabetes$`No. of pregnancies`, p = 0.65, list = FALSE)
-  PimaIndiansDiabetes_train <- PimaIndiansDiabetes[train_index, ]
-  PimaIndiansDiabetes_test <- PimaIndiansDiabetes[-train_index, ]
+   train_index <- createDataPartition(PimaIndiansDiabetes$diabetes,
+                                      p = 0.60, list = FALSE)
+   PimaIndiansDiabetes_train <- PimaIndiansDiabetes[train_index, ]
+   PimaIndiansDiabetes_test <- PimaIndiansDiabetes[-train_index, ]
   
 ```
 
 ### Training using 10-fold cross validation and testing the trained linear model
 
 ``` r
- 
-   #--REGRESSION--
+ #--REGRESSION--
    #STEP 3a: using 10-fold cross validation
    train_control <- trainControl(method = "cv", number = 10)
    
