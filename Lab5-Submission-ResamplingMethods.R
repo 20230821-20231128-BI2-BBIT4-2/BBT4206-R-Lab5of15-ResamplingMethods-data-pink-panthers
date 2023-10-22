@@ -57,13 +57,11 @@ if (require("naivebayes")) {
   
   
 #STEP 1: Loading the dataset
-  PimaIndiansDiabetes <-
-    readr::read_csv(
-      "data/pima-indians-diabetes.csv")
+data(PimaIndiansDiabetes)
 
   #NAIVE BAYES
 #STEP 2: Splitting the dataset ----
-  train_index <- createDataPartition(PimaIndiansDiabetes$`No. of pregnancies`, # nolint
+  train_index <- createDataPartition(PimaIndiansDiabetes$diabetes, # nolint
                                      p = 0.80, list = FALSE)
   PimaIndiansDiabetes_train <- PimaIndiansDiabetes[train_index, ]
   PimaIndiansDiabetes_test <- PimaIndiansDiabetes[-train_index, ]
@@ -72,13 +70,13 @@ if (require("naivebayes")) {
   
 #STEP 3a: using "NaiveBayes()" function in the "e1071" package ----
   PimaIndiansDiabetes_model_nb_e1071 <- # nolint
-    e1071::naiveBayes(`No. of pregnancies` ~ .,
+    e1071::naiveBayes(diabetes ~ .,
                      data = PimaIndiansDiabetes_train)
   
   
 #STEP 3b: using "NaiveBayes()" function in the "klaR" package 
   PimaIndiansDiabetes_model_nb_klaR <-
-    klaR::NaiveBayes(`No. of pregnancies` ~ .,
+    klaR::NaiveBayes(diabetes ~ .,
                      data = PimaIndiansDiabetes_train)
   
 #STEP 4:Testing the trained Naive Bayes model
@@ -89,11 +87,11 @@ if (require("naivebayes")) {
 #STEP 5:Printing results
   print(PimaIndiansDiabetes_model_nb_e1071)
   caret::confusionMatrix(predictions_nb_e1071,
-                         PimaIndiansDiabetes_test$`No. of pregnancies`)
+                         PimaIndiansDiabetes_test$diabetes)
 
 #STEP 6:the confusion matrix
   plot(table(predictions_nb_e1071,
-             PimaIndiansDiabetes_test$`No. of pregnancies`))
+             PimaIndiansDiabetes_test$diabetes))
   
   predictions_nb_e1071 <-
     predict(defaulter_dataset_model_nb_e1071,
@@ -103,12 +101,9 @@ if (require("naivebayes")) {
   #----BOOTSTRAPPING----
   
 #STEP 1: Loading the dataset
-  PimsIndiansDiabetes <-
-    readr::read_csv(
-      "data/pima-indians-diabetes.csv")
-  
+  data(PimaIndiansDiabetes)
 #STEP 2: Splitting the dataset into training and testing datasets
-  train_index <- createDataPartition(PimaIndiansDiabetes$`No. of pregnancies`, p = 0.65, list = FALSE)
+  train_index <- createDataPartition(PimaIndiansDiabetes$diabetes, p = 0.65, list = FALSE)
   PimaIndiansDiabetes_train <- PimaIndiansDiabetes[train_index, ]
   PimaIndiansDiabetes_test <- PimaIndiansDiabetes[-train_index, ]
   
@@ -117,7 +112,7 @@ if (require("naivebayes")) {
  train_control <- trainControl(method = "boot", number = 500)
   
  PimaIndiansDiabetes_model_lm <- 
-   caret::train(`No. of pregnancies` ~ 
+   caret::train(diabetes ~ 
                  Glucose + `Blood Pressure` + `Skin Thickness`
                 + Insulin + `Diabetes predigree function`+
                   + Age + Class,
@@ -139,7 +134,7 @@ if (require("naivebayes")) {
  print(predictions_lm)
  
  new_data <-
-   data.frame( `No. of pregnancies` = c(4), 
+   data.frame( diabetes = c(4), 
                Glucose = c(160),
                `Blood Pressure` = c(149),
                triceps = c(50),
@@ -159,10 +154,10 @@ if (require("naivebayes")) {
    
    #---cross validation----
 #STEP 1: Loading the dataset   
-   data("PimaIndiansDiabetes")
+data(PimaIndiansDiabetes)
    
 #STEP 2: Splitting the dataset into training and testing datasets
-   train_index <- createDataPartition(PimaIndiansDiabetes$`No. of pregnancies`,
+   train_index <- createDataPartition(PimaIndiansDiabetes$diabetes,
                                       p = 0.60, list = FALSE)
    PimaIndiansDiabetes_train <- PimaIndiansDiabetes[train_index, ]
    PimaIndiansDiabetes_test <- PimaIndiansDiabetes[-train_index, ]
